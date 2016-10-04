@@ -33,10 +33,19 @@ const drawBoard=(boardState)=>{
 	`
 }
 const table= document.querySelector('.board')
+let nextPlayer = 'X'
 
 table.addEventListener('click',event=>{
 	const col = event.target.cellIndex
 	const row = event.target.parentElement.rowIndex
-	board[row][col]='O'
-	drawBoard(board)
+	
+	if(!board[row][col]){
+		board[row][col]=nextPlayer
+		nextPlayer= nextPlayer === 'X' ? 'O': 'X'
+		drawBoard(board)
+	}
+	else{
+		console.log("You can't play there")
+	}
+	
 })
