@@ -32,7 +32,6 @@ const drawBoard=(boardState)=>{
 	</table>
 	`
 }
-
 const winner = b => {
   // Rows
   if (b[0][0] && b[0][0] === b[0][1] && b[0][1] === b[0][2]) {
@@ -77,7 +76,7 @@ table.addEventListener('click',event=>{
 		drawBoard(board)
 	}
 	if(winner(board)){
-		console.log(`${winner(board)} has won`)
+		return table.innerHTML += `<h1> ${winner(board)} has won </h1>`
 	}
 	
 })
