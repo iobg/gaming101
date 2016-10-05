@@ -1,25 +1,20 @@
 'use strict'
 
 const socket = io()
-
+let board;
 socket.on('connect',()=>console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect',()=>console.log(`Socket disconnected: ${socket.id}`))
 socket.on('error',console.error)
 socket.on('new game', game=>{
 	render(game)
+	board=game.board
 })
 socket.on('move made', game=>{
 	render(game)
 })
 
-let board=[
-	['','',''],
-	['','',''],
-	['','','']
-]
 const table= document.querySelector('.board')
 const status = document.querySelector('.status')
-let nextPlayer = 'X'
 
 const render=game=>{
 	renderStatus(game);
@@ -60,12 +55,6 @@ const drawBoard=(boardState)=>{
 const tableClick =event=>{
 	const col = event.target.cellIndex
 	const row = event.target.parentElement.rowIndex
-	if(board[row][col]){
-		console.log("You can't play there")
-	}
-	else{
-		socket.emit('makeMove',{row,col})
-	}
+	socket.emit('makeMove',{row,col})
 }
-
 table.addEventListener('click',tableClick)

@@ -55,6 +55,29 @@ mongoose.Promise = Promise
 mongoose.connect(MONGODB_URL,()=>{
 	server.listen(PORT,()=> console.log('Server is listening on port', PORT))
 })
+const isFinished = game => !!game.result
+const spaceTaken = (board,row,col) => !!board[row][col]
+const setMove=(game,row,col)=> {
+
+	game.board[row][col] = game.nextMove
+	return game.save()
+}
+const toggleNextMove=game=>{
+	 game.nextMove=game.nextMove === '👽' ? '💩' : '👽'
+	 return game.save()
+}
+const setResult = game => {
+  const result = winner(game.board)
+
+  if (result) {
+    game.toMove = undefined // mongoose equivalent to: `delete socket.game.toMove`
+    game.result = result
+  }
+
+  return game.save()
+}
+
+const result=undefined;
 io.on('connect',socket=>{
 	Game.create({
 		board:[['','',''],['','',''],['','','']],
@@ -69,12 +92,16 @@ io.on('connect',socket=>{
 		socket.emit('error',err)
 	})
 	socket.on('makeMove',({row,col})=>{
-		socket.game.board[row][col]=socket.game.nextMove
-		socket.game.nextMove=socket.game.nextMove === '👽' ? '💩' : '👽'
-		const result = winner(socket.game.board)
-		if(result){
-			socket.game.result=result;
+		if(isFinished(socket.game)){
+			return;
 		}
+		if(spaceTaken(socket.game.board,row,col)){
+			return;
+		}
+		setMove(socket.game,row,col)
+		toggleNextMove(socket.game)
+		setResult(socket.game,result)
+
 		socket.game.markModified('board')
 		socket.game.save().then(g=>{
 			socket.emit('move made', g)
