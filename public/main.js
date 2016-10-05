@@ -20,6 +20,7 @@ const render=game=>{
 	renderStatus(game);
 	drawBoard(game.board)
 	board=game.board
+	console.log(game)
 }
 
 const renderStatus=g=>{

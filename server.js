@@ -25,7 +25,9 @@ app.get('/game/create',(req,res)=>{
 		board:[['','',''],['','',''],['','','']],
 		nextMove: '👽'
 	})
-	.then(game=>res.redirect(`/game/${game._id}`))
+	.then(game=>{
+		res.redirect(`/game/${game._id}`)
+	})
 })
 
 app.get('/game/:id',(req,res)=>{
@@ -107,7 +109,9 @@ const setResult = game => {
   return game.save()
 }
 const makeMove=(socket,row,col)=>{
-	if(isFinished(socket.game)){
+	Game.findById(socket.gameId)
+	.then(game=>{
+		if(isFinished(socket.game)){
 			return;
 		}
 		if(spaceTaken(socket.game.board,row,col)){
@@ -120,8 +124,12 @@ const makeMove=(socket,row,col)=>{
 		socket.game.markModified('board')
 		socket.game.save()
 		.then(g=>{
-			io.emit('move made', g)
+			socket.join(socket.game._id)
+			io.to(socket.game.id).emit('move made', g)
 		})
+
+	})
+	
 }
 
 const result=undefined;
@@ -129,7 +137,8 @@ io.on('connect',socket=>{
 	const id = socket.handshake.headers.referer.split('/').slice(-1)[0]
 	Game.findById(id)
 	.then(g=>{
-		socket.game=g;
+		socket.join(g._id)
+		socket.gameId=g.id;
 		socket.emit('new game', g)
 	})
 	.catch(err=>{
