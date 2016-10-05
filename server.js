@@ -70,11 +70,27 @@ const setResult = game => {
   const result = winner(game.board)
 
   if (result) {
-    game.toMove = undefined // mongoose equivalent to: `delete socket.game.toMove`
+    game.toMove = undefined
     game.result = result
   }
 
   return game.save()
+}
+const makeMove=(socket,row,col)=>{
+	if(isFinished(socket.game)){
+			return;
+		}
+		if(spaceTaken(socket.game.board,row,col)){
+			return;
+		}
+		setMove(socket.game,row,col)
+		toggleNextMove(socket.game)
+		setResult(socket.game,result)
+
+		socket.game.markModified('board')
+		socket.game.save().then(g=>{
+			socket.emit('move made', g)
+		})
 }
 
 const result=undefined;
@@ -92,21 +108,7 @@ io.on('connect',socket=>{
 		socket.emit('error',err)
 	})
 	socket.on('makeMove',({row,col})=>{
-		if(isFinished(socket.game)){
-			return;
-		}
-		if(spaceTaken(socket.game.board,row,col)){
-			return;
-		}
-		setMove(socket.game,row,col)
-		toggleNextMove(socket.game)
-		setResult(socket.game,result)
-
-		socket.game.markModified('board')
-		socket.game.save().then(g=>{
-			socket.emit('move made', g)
-		})
-		
+		makeMove(socket,row,col)
 	})
 
 	socket.on('disconnect',()=>console.log(`Socket disconnected: ${socket.id}`))
