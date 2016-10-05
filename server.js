@@ -15,9 +15,11 @@ app.use(express.static('public'))
 app.get('/',(req,res)=>{
 	res.render('home')
 })
+
 app.get('/game',(req,res)=>{
 	res.render('index', {games:[{_id:123}, {_id:124}, {_id:125}]})
 })
+
 app.get('/game/create',(req,res)=>{
 	Game.create({
 		board:[['','',''],['','',''],['','','']],
@@ -25,6 +27,7 @@ app.get('/game/create',(req,res)=>{
 	})
 	.then(game=>res.redirect(`/game/${game._id}`))
 })
+
 app.get('/game/:id',(req,res)=>{
 	res.render('game')
 })
@@ -115,17 +118,16 @@ const makeMove=(socket,row,col)=>{
 		setResult(socket.game,result)
 
 		socket.game.markModified('board')
-		socket.game.save().then(g=>{
-			socket.emit('move made', g)
+		socket.game.save()
+		.then(g=>{
+			io.emit('move made', g)
 		})
 }
 
 const result=undefined;
 io.on('connect',socket=>{
-	Game.create({
-		board:[['','',''],['','',''],['','','']],
-		nextMove: '👽'
-	})
+	const id = socket.handshake.headers.referer.split('/').slice(-1)[0]
+	Game.findById(id)
 	.then(g=>{
 		socket.game=g;
 		socket.emit('new game', g)
