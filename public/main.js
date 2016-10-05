@@ -29,6 +29,7 @@ const render=game=>{
 const renderStatus=g=>{
 	if(winner(g.board)){
 		status.innerHTML = `<h1> ${winner(g.board)} has won </h1>`
+		table.removeEventListener('click',tableClick)
 	}
 	else status.innerText= `${g.nextMove}'s turn`
 }
@@ -81,10 +82,7 @@ const winner = b => {
   }
 }
 
-
-
-
-table.addEventListener('click',event=>{
+const tableClick =event=>{
 	const col = event.target.cellIndex
 	const row = event.target.parentElement.rowIndex
 	socket.emit('makeMove',{row,col})
@@ -93,4 +91,6 @@ table.addEventListener('click',event=>{
 		console.log("You can't play there")
 	}
 	
-})
+}
+
+table.addEventListener('click',tableClick)
