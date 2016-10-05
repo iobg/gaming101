@@ -24,7 +24,11 @@ const render=game=>{
 
 const renderStatus=g=>{
 	if(g.result){
-		status.innerHTML = `${g.result} has won`
+		if(g.result !== "Tie"){
+			status.innerHTML = `${g.result} has won`
+		}
+		else status.innerHTML = "It's a Tie"
+			
 		table.removeEventListener('click',tableClick)
 	}
 	else status.innerText= `${g.nextMove}'s turn`

@@ -57,8 +57,9 @@ const winner = b => {
 }
 
 const movesRemaining=board=>{
+	const MAXLENGTH=26
 	const movesMade=board.toString()
-	if(movesMade.length >=26) return true;
+	if(movesMade.length >=MAXLENGTH) return true;
 
 }
 
