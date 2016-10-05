@@ -49,6 +49,17 @@ const winner = b => {
   } else if (b[0][2] && b[0][2] === b[1][1] && b[1][1] === b[2][0]) {
     return b[0][2]
   }
+  if(movesRemaining(b)){
+  	return "Tie"
+  }
+
+  return null
+}
+
+const movesRemaining=board=>{
+	const movesMade=board.toString()
+	if(movesMade.length >=26) return true;
+
 }
 
 mongoose.Promise = Promise
