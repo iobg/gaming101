@@ -20,7 +20,8 @@ const Game = mongoose.model('game',{
 	[String,String,String],
 	[String,String,String],
 	[String,String,String]
-	]
+	],
+	nextMove: String
 })
 
 mongoose.Promise = Promise
@@ -29,7 +30,8 @@ mongoose.connect(MONGODB_URL,()=>{
 })
 io.on('connect',socket=>{
 	Game.create({
-		board:[['','',''],['','',''],['','','']]
+		board:[['','',''],['','',''],['','','']],
+		nextMove: 'X'
 	})
 	.then(g=>{
 		socket.game=g;
@@ -40,13 +42,14 @@ io.on('connect',socket=>{
 		socket.emit('error',err)
 	})
 	socket.on('makeMove',({row,col})=>{
-		socket.game.board[row][col]="X"
+		socket.game.board[row][col]=socket.game.nextMove
+		socket.game.nextMove=socket.game.nextMove === 'X' ? 'O' : 'X'
+		socket.game.markModified('board')
 		socket.game.save().then(g=>{
 			socket.emit('move made', g)
 		})
 		
 	})
-
 
 	socket.on('disconnect',()=>console.log(`Socket disconnected: ${socket.id}`))
 })
