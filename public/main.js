@@ -28,7 +28,7 @@ const renderStatus=g=>{
 			status.innerHTML = `${g.result} has won`
 		}
 		else status.innerHTML = "It's a Tie"
-			
+
 		table.removeEventListener('click',tableClick)
 	}
 	else status.innerText= `${g.nextMove}'s turn`
@@ -55,7 +55,6 @@ const drawBoard=(boardState)=>{
 	</table>
 	`
 }
-
 const tableClick =event=>{
 	const col = event.target.cellIndex
 	const row = event.target.parentElement.rowIndex

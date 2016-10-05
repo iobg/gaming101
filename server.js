@@ -11,10 +11,25 @@ const PORT = process.env.port || 3000
 const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017/tictactoe'
 app.set('view engine','pug')
 app.use(express.static('public'))
+//routes
 app.get('/',(req,res)=>{
-	res.render('index')
+	res.render('home')
+})
+app.get('/game',(req,res)=>{
+	res.render('index', {games:[{_id:123}, {_id:124}, {_id:125}]})
+})
+app.get('/game/create',(req,res)=>{
+	Game.create({
+		board:[['','',''],['','',''],['','','']],
+		nextMove: '👽'
+	})
+	.then(game=>res.redirect(`/game/${game._id}`))
+})
+app.get('/game/:id',(req,res)=>{
+	res.render('game')
 })
 
+//game logic
 const Game = mongoose.model('game',{
 	board:[
 	[String,String,String],
