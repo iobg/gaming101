@@ -31,7 +31,7 @@ mongoose.connect(MONGODB_URL,()=>{
 io.on('connect',socket=>{
 	Game.create({
 		board:[['','',''],['','',''],['','','']],
-		nextMove: 'X'
+		nextMove: '👽'
 	})
 	.then(g=>{
 		socket.game=g;
@@ -43,7 +43,7 @@ io.on('connect',socket=>{
 	})
 	socket.on('makeMove',({row,col})=>{
 		socket.game.board[row][col]=socket.game.nextMove
-		socket.game.nextMove=socket.game.nextMove === 'X' ? 'O' : 'X'
+		socket.game.nextMove=socket.game.nextMove === '👽' ? '💩' : '👽'
 		socket.game.markModified('board')
 		socket.game.save().then(g=>{
 			socket.emit('move made', g)

@@ -6,10 +6,10 @@ socket.on('connect',()=>console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect',()=>console.log(`Socket disconnected: ${socket.id}`))
 socket.on('error',console.error)
 socket.on('new game', game=>{
-	drawBoard(game.board)
+	render(game)
 })
 socket.on('move made', game=>{
-	drawBoard(game.board)
+	render(game)
 })
 
 const board=[
@@ -17,6 +17,21 @@ const board=[
 	['','',''],
 	['','','']
 ]
+const table= document.querySelector('.board')
+const status = document.querySelector('.status')
+let nextPlayer = 'X'
+
+const render=game=>{
+	renderStatus(game);
+	drawBoard(game.board)
+}
+
+const renderStatus=g=>{
+	if(winner(g.board)){
+		status.innerHTML = `<h1> ${winner(g.board)} has won </h1>`
+	}
+	else status.innerText= `${g.nextMove}'s turn`
+}
 
 const drawBoard=(boardState)=>{
 	document.querySelector('.board').innerHTML=`
@@ -67,8 +82,7 @@ const winner = b => {
 }
 
 
-const table= document.querySelector('.board')
-let nextPlayer = 'X'
+
 
 table.addEventListener('click',event=>{
 	const col = event.target.cellIndex
@@ -78,13 +92,5 @@ table.addEventListener('click',event=>{
 	if(board[row][col]){
 		console.log("You can't play there")
 	}
-	else{
-		board[row][col]=nextPlayer
-		nextPlayer= nextPlayer === 'X' ? 'O': 'X'
-	}
-	if(winner(board)){
-		return table.innerHTML += `<h1> ${winner(board)} has won </h1>`
-	}
-
 	
 })
