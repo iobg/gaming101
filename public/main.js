@@ -4,6 +4,10 @@ const socket = io()
 
 socket.on('connect',()=>console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect',()=>console.log(`Socket disconnected: ${socket.id}`))
+socket.on('error',console.error)
+socket.on('new game', game=>{
+	drawBoard(game.board)
+})
 
 const board=[
 	['','',''],

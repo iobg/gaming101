@@ -15,11 +15,32 @@ app.get('/',(req,res)=>{
 	res.render('index')
 })
 
+const Game = mongoose.model('game',{
+	board:[
+	[String,String,String],
+	[String,String,String],
+	[String,String,String]
+	]
+})
+
+mongoose.Promise = Promise
 mongoose.connect(MONGODB_URL,()=>{
 	server.listen(PORT,()=> console.log('Server is listening on port', PORT))
 })
 io.on('connect',socket=>{
-	console.log(`Socket connected: ${socket.id}`)
+	Game.create({
+		board:[['','',''],['','',''],['','','']]
+	})
+	.then(g=>{
+		socket.game=g;
+		socket.emit('new game', g)
+	})
+	.catch(err=>{
+		console.error(err)
+		socket.emit('error',err)
+	})
+
+
 	socket.on('disconnect',()=>console.log(`Socket disconnected: ${socket.id}`))
 })
 
