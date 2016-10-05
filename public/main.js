@@ -8,6 +8,9 @@ socket.on('error',console.error)
 socket.on('new game', game=>{
 	drawBoard(game.board)
 })
+socket.on('move made', game=>{
+	drawBoard(game.board)
+})
 
 const board=[
 	['','',''],
@@ -70,6 +73,7 @@ let nextPlayer = 'X'
 table.addEventListener('click',event=>{
 	const col = event.target.cellIndex
 	const row = event.target.parentElement.rowIndex
+	socket.emit('makeMove',{row,col})
 
 	if(board[row][col]){
 		console.log("You can't play there")
@@ -77,10 +81,10 @@ table.addEventListener('click',event=>{
 	else{
 		board[row][col]=nextPlayer
 		nextPlayer= nextPlayer === 'X' ? 'O': 'X'
-		drawBoard(board)
 	}
 	if(winner(board)){
 		return table.innerHTML += `<h1> ${winner(board)} has won </h1>`
 	}
+
 	
 })
