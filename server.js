@@ -87,7 +87,7 @@ mongoose.Promise = Promise
 mongoose.connect(MONGODB_URL,()=>{
 	server.listen(PORT,()=> console.log('Server is listening on port', PORT))
 })
-const isFinished = game => !!game.result
+const isFinished = game => !!result
 const spaceTaken = (board,row,col) => !!board[row][col]
 const setMove=(game,row,col)=> {
 
@@ -111,21 +111,21 @@ const setResult = game => {
 const makeMove=(socket,row,col)=>{
 	Game.findById(socket.gameId)
 	.then(game=>{
-		if(isFinished(socket.game)){
+		if(isFinished(game)){
 			return;
 		}
-		if(spaceTaken(socket.game.board,row,col)){
+		if(spaceTaken(game.board,row,col)){
 			return;
 		}
-		setMove(socket.game,row,col)
-		toggleNextMove(socket.game)
-		setResult(socket.game,result)
+		setMove(game,row,col)
+		toggleNextMove(game)
+		setResult(game,result)
 
-		socket.game.markModified('board')
-		socket.game.save()
+		game.markModified('board')
+		game.save()
 		.then(g=>{
-			socket.join(socket.game._id)
-			io.to(socket.game.id).emit('move made', g)
+			socket.join(game._id)
+			io.to(game.id).emit('move made', g)
 		})
 
 	})
